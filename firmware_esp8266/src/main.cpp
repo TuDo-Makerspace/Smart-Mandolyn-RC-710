@@ -7,7 +7,7 @@
 // Meta
 ////////////////////////////////////////////
 
-#define VERSION "1.0.0_ESP8266"
+#define VERSION "1.0.1_ESP8266"
 
 ////////////////////////////////////////////
 // Debugging
@@ -395,6 +395,20 @@ void config_wifi() {}
 #endif
 
 ////////////////////////////////////////////
+// Timeouts
+////////////////////////////////////////////
+
+static unsigned long tstamp;
+
+void set_timeout(unsigned long timeout) {
+    tstamp = millis() + timeout;
+}
+
+bool timeout() {
+    return millis() > tstamp;
+}
+
+////////////////////////////////////////////
 // Misc
 ////////////////////////////////////////////
 
@@ -419,6 +433,9 @@ void setup() {
     init_physical_input();
     init_action_pin();
     config_wifi();
+
+    WiFi.setAutoReconnect(true);
+    WiFi.persistent(true);
 
     pinMode(LED_BUILTIN, OUTPUT);
     bool led_state = BUILTIN_LED_OFF;
@@ -457,23 +474,32 @@ void loop() {
     // Handle TCP requests
     WiFiClient client = server.accept();
     if (client) {
-
         DEBUG_PRINTLN(2, "Client connected");
+        set_timeout(CLIENT_TIMEOUT);
 
-        while (client.connected()) {
-            if (client.available()) {
-                uint8_t data = client.read();
+        while (client.connected() && !timeout()) {
+            if (!client.available())
+                continue;
 
-                if (answer(&client, data))
-                    continue;
+            uint8_t data = client.read();
 
-                action_type a;
-                if (tcp2action_type(data, &a) == 0)
-                    action(a);
+            if (answer(&client, data)) {
+                set_timeout(CLIENT_TIMEOUT);
+                continue;
             }
+
+            action_type a;
+
+            if (tcp2action_type(data, &a) == 0)
+                action(a);
+
+            set_timeout(CLIENT_TIMEOUT);
         }
 
-        DEBUG_PRINTLN(2, "Client disconnected");
+        if (timeout())
+            DEBUG_PRINTLN(1, "Client timed out");
+        else
+            DEBUG_PRINTLN(2, "Client disconnected");
 
         client.stop();
     }
