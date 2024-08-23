@@ -1,3 +1,6 @@
 *.kicad_prl
 .vscode/
 build/
+sym-lib-table
+*.bak
+
