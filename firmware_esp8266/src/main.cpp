@@ -13,31 +13,31 @@
 // Debugging
 ////////////////////////////////////////////
 
-#ifdef DEBUG
+#if DEBUG > 0
 #define DEBUG_PRINTLN(level, x) if (level <= DEBUG) Serial.println(x)
 #else
 #define DEBUG_PRINTLN(level, x)
 #endif
 
 ////////////////////////////////////////////
-// Actions
+// Actions and States
 ////////////////////////////////////////////
 
 /**
- * enum action_state
- * Maps action states to their corresponding gpio state.
+ * enum device_state
+ * Maps device states to their corresponding electrical states
  */
 
 #if MODE == MODE_ON_OFF_INVERTED
 
-enum action_state {
+enum device_state {
     OFF = HIGH,
     ON = LOW,
 };
 
 #else
 
-enum action_state {
+enum device_state {
     OFF = LOW,
     ON = HIGH,
 };
@@ -173,24 +173,24 @@ void action(action_type action) {
 ////////////////////////////////////////////
 
 /**
- * uint8_t action_state2tcp(action_state state)
- * Maps an action state to its corresponding tcp data.
+ * uint8_t device_state2tcp(device_state state)
+ * Maps a device state to its corresponding tcp data.
  */
 #if ANY_MODE_ON_OFF
 
-uint8_t action_state2tcp(action_state state) {
+uint8_t device_state2tcp(device_state state) {
     return state == ON ? TCP_ON_DATA : TCP_OFF_DATA;
 }
 
 #elif MODE == MODE_TOGGLE
 
-uint8_t action_state2tcp(action_state state) {
+uint8_t device_state2tcp(device_state state) {
     return TCP_TOGGLE_DATA;
 }
 
 #elif MODE == MODE_PULSE_LOW || MODE == MODE_PULSE_HIGH
 
-uint8_t action_state2tcp(action_state state) {
+uint8_t device_state2tcp(device_state state) {
     return TCP_PULSE_DATA;
 }
 
@@ -251,7 +251,7 @@ int tcp2action_type(uint8_t data, action_type *type) {
 bool answer(WiFiClient *c, uint8_t get_request) {
     if (get_request == TCP_GET_STATE) {
         DEBUG_PRINTLN(2, "get_request: TCP_GET_STATE");
-        c->write(action_state2tcp(action_state(g_state)));
+        c->write(device_state2tcp(device_state(g_state)));
         return true;
     }
     return false;
@@ -422,6 +422,8 @@ bool timeout() {
 WiFiServer server(TCP_PORT);
 
 void setup() {
+    init_physical_input();
+    init_action_pin();
 
 #ifdef DEBUG
     Serial.begin(115200);
@@ -430,8 +432,6 @@ void setup() {
 
     DEBUG_PRINTLN(1, "====== TCP Action Server " VERSION "======");
 
-    init_physical_input();
-    init_action_pin();
     config_wifi();
 
     WiFi.setAutoReconnect(true);
@@ -478,8 +478,10 @@ void loop() {
         set_timeout(CLIENT_TIMEOUT);
 
         while (client.connected() && !timeout()) {
-            if (!client.available())
+            if (!client.available()) {
+                DEBUG_PRINTLN(3, "Awaiting data...");
                 continue;
+            }
 
             uint8_t data = client.read();
 
@@ -496,10 +498,11 @@ void loop() {
             set_timeout(CLIENT_TIMEOUT);
         }
 
-        if (timeout())
+        if (timeout()) {
             DEBUG_PRINTLN(1, "Client timed out");
-        else
+        } else {
             DEBUG_PRINTLN(2, "Client disconnected");
+        }
 
         client.stop();
     }
