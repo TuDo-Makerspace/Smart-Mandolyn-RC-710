@@ -4087,6 +4087,16 @@
 		)
 		(uuid "3686a908-a372-4f06-9da6-78fae11359c9")
 	)
+	(polyline
+		(pts
+			(xy 278.13 233.68) (xy 278.13 219.71)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "3851e291-9b8d-4322-92e7-7e80efa1e9f8")
+	)
 	(wire
 		(pts
 			(xy 152.4 231.14) (xy 152.4 247.65)
@@ -5931,6 +5941,16 @@
 			)
 		)
 		(uuid "af2049f5-3f23-49a9-991b-06422a93f171")
+	)
+	(text "REMOVE"
+		(exclude_from_sim no)
+		(at 273.304 221.742 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "b6db05fb-fead-482d-9f73-57f43d3145e3")
 	)
 	(text "WiFi Hack"
 		(exclude_from_sim no)
@@ -11692,8 +11712,8 @@
 				(justify right)
 			)
 		)
-		(property "Value" "R"
-			(at 278.892 223.52 90)
+		(property "Value" "10k"
+			(at 280.162 223.52 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13300,7 +13320,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "f8c4214a-92fd-427e-9503-46bf83038a68")
 		(property "Reference" "#PWR031"
 			(at 346.71 227.33 0)
@@ -13311,12 +13330,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "Pi Pico W GND"
-			(at 346.71 226.06 0)
+		(property "Value" "WiFi Board GND"
+			(at 339.09 226.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
