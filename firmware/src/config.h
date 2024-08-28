@@ -8,17 +8,20 @@
 // Debug Configuration
 ////////////////////////////////////////////
 
-// #define DEBUG 1
+#define DEBUG 0
 
 ////////////////////////////////////////////
 // WiFi configuration
 ////////////////////////////////////////////
 
 #define WIFI_SSID "YOUR SSID"
-#define WIFI_PSK "YOUR PASSWORD"
+#define WIFI_PSK "YOUR PSK"
 #define TCP_PORT 8080
+#define CLIENT_TIMEOUT 30 * 1000 // ms
 
 #define USE_STATIC_IP // Comment out for DHCP
+
+// Only needs to be set if USE_STATIC_IP defined
 #ifdef USE_STATIC_IP
 #define STATIC_IP "192.168.1.10"
 #define GATEWAY "192.168.1.1"
@@ -29,8 +32,8 @@
 // Push Button/Switch Configuration
 ////////////////////////////////////////////
 
-#define PHYSICAL_INPUT PHYS_BUTTON // PHYS_BUTTON, PHYS_SWITCH or comment out if not used
-#define PHYSICAL_PIN 0
+#define PHYSICAL_INPUT PHYS_SWITCH // PHYS_BUTTON, PHYS_SWITCH or comment out if not used
+#define PHYSICAL_PIN 4
 
 #if PHYSICAL_INPUT == PHYS_BUTTON
 #define DEBOUNCE_TIME 20 // ms
@@ -41,7 +44,7 @@
 // Action Configuration
 ////////////////////////////////////////////
 
-#define ACTION_PIN 3
+#define ACTION_PIN 5
 
 /**
  * Possible values:
@@ -66,7 +69,7 @@
 #define TCP_GET_STATE   0x03
 
 // Boot state
-#define BOOT_STATE      ON
+#define BOOT_STATE      OFF
 
 ////////////////////////////////////////////
 // Toggle Mode Configuration
