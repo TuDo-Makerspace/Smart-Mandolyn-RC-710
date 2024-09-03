@@ -1,10 +1,12 @@
 # Hacking a Mandolyn RC-710 RF Remote Power Socket
 
+![Showcase](images/Showcase.png)
+
 In this project, I hacked a budget-friendly Mandolyn RC-710 RF remote power socket to make it controllable via WiFi—in other words, to turn it into a "smart" power socket. Along the way, I reverse-engineered the RC-710's schematics, modified the PCB to safely allow external toggling of the built-in relay, and developed an ESP8266-based board that controls the relay wirelessly via TCP.
 
 ## Warning
 
-![Warning](images/warning.png)
+![Warning](images/Warning.webp)
 
 The RC-710 is powered by an unisolated power supply. This means that when the device is powered from mains as intended, any low voltages measured on the board will still be at a potentially lethal voltage relative to earth ground. To stress this: Simply touching a pin labeled "0V GND" on the schematic will apply a dangerous voltage (at worst 325V DC) across your body! As we’ll explore, a 24V DC power supply can be connected to the board instead of mains for testing purposes, eliminating the risk of electric shock. However, it should be crystal clear: **Do not mess with this device unless you know exactly what you’re doing! I am not responsible for any damage or injury caused by attempting to replicate this project.** Even with my exprience, I am still endangering myself by working on this device.
 
@@ -36,7 +38,7 @@ The RC-710 is a remote-controlled power socket that toggles on and off using a 4
 
 The socket itself has two buttons: one to manually toggle the power on and off, and another to "learn" a new remote code. It also has a green LED that lights up when the socket is on.
 
-![RC-710](images/rc710.jpg)
+![RC-710](images/RC-710.jpg)
 
 #### The remote
 
@@ -44,7 +46,7 @@ The RF remote operates on up to four channels, each with its own unique 433MHz c
 
 Since this project discards the RF remote in favor of WiFi control, we won’t be delving into the remote any further.
 
-![Remote](images/remote.jpg)
+![Remote](images/Remote.jpg)
 
 #### Availability
 
@@ -56,20 +58,22 @@ Not much information is available about these things. They’re sold under vario
 
 Opening up the RC-710 is pretty straightforward. Start by removing the six screws on the back, and the two halves of the enclosure will come apart easily. You might also need to press in the AC plug to release it from the enclosure.
 
-![Opening the RC-710](images/opening_rc710.jpg)
+![Screws Outside](images/Teardown1.png)
 
 Once inside, you'll see the top side of a simple one-sided PCB. The PCB is secured with four smaller screws. After removing these, you can lift the PCB out of the enclosure.
+
+![Screws PCB](images/Teardown2.png)
 
 ### Reverse Engineering the Schematic
 
 I started by taking photos of both the top and bottom sides of the PCB, then overlapping them in GIMP. After adjusting the images, I managed to get the traces of both layers almost perfectly aligned. This setup allowed me to quickly toggle between the two layers by simply showing or hiding the top layer.
 
-![PCB Top](images/pcb_top.png)
-![PCB Bottom](images/pcb_bottom.png)
+![PCB Top](RC-710/PCB/Top.png)
+![PCB Bottom](RC-710/PCB/Bottom.png)
 
 On a second screen, I opened up KiCAD to create a schematic. I began by adding symbols for all the components. From there, I started connecting the symbols according to the PCB's traces. When the images from GIMP didn’t provide enough detail, I used a multimeter to verify connections between components. After getting everything laid out, I was left with a rather messy schematic. The final step was to clean it up and make it more readable.
 
-![Schematic](images/schematic.png)
+![Schematic](images/Schematic.png)
 
 ### The circuit
 
@@ -93,7 +97,7 @@ The RF receiver is made up of a network of capacitors, inductors, and transistor
 
 The mysterious blob IC serves as the brains of the device. It is powered by approx. 3V (regulated down from the 5V supply using diodes) and manages the "LEARN" and "ON/OFF" push-buttons, decodes and "learns" RF signals, and ultimately controls the relay by switching the transistor Q2.
 
-![Blob IC](images/blob_ic.jpg)
+![Blob IC](images/Blob.png)
 
 ## Modifying the RC-710
 
@@ -101,7 +105,7 @@ The mysterious blob IC serves as the brains of the device. It is powered by appr
 
 Before applying any modifications to the RC-710, I wanted to ensure that I could safely work on the device without the risk of electric shock. The RC-710 is powered by a 24V DC supply, which is derived from the mains voltage. To eliminate the risk of electric shock, I decided to power the device using a 24V DC power supply instead of mains by attaching the postive lead to the positive side of C12 and the negative lead to the negative side of C12 (GND). 
 
-![24V DC Power Supply](images/24v_dc_power_supply.jpg)
+![24V DC Power Supply](images/24V.jpg)
 
 A 5V supply can theoretically also be used to power the device, but the relay will no longer be able to switch due to the insufficiently strong magnetic field.
 
@@ -119,7 +123,9 @@ I set some straightforward rules and requirements for the project:
 
 To hijack the device, the first step was to find a simple way to disable the blob IC. That way I didn't have to worry about the device's internal functions interfering with the external signal. This was easily achieved by depraiving the blob IC of its power by desoldering diode D12. Later I also discovered that R22 also needed to be removed, as a high state on the OP-AMP’s output was somehow still providing enough power to the blob to pull down the base of the relay driver transistor Q2.
 
-![Removed Components]()
+![D12 Removed](images/D12Cut.png)
+![R22 Removed](images/R22Cut.png)
+![Blob IC Disabled](images/Q2ModBase.png)
 
 The next step was to enable external control of the relay transistor's base. I wanted to add a 2-pin connector to the device's case that could be used to control the relay. For safety, this connector needed to be electrically isolated from the rest of the device. To achieve this, I used a 4N25 optocoupler, which we had plenty of in the lab, and a 3.5mm headphone jack as the external connector.
 
@@ -127,11 +133,12 @@ The 4N25 optocoupler contains an NPN phototransistor. By connecting the phototra
 
 To protect the "low voltage" side of the optocoupler, I also added a 220 Ohm current-limiting resistor. While the use of a headphone jack might tempt someone to connect an audio source to it, the high output impedance of audio devices, combined with the 220 Ohm resistor, should keep the optocoupler safe. In the worst-case scenario, it would just cause the relay to toggle rapidly.
 
-![Optocoupler]()
+![Optocoupler](images/Optocoupler.png)
 
 After soldering the optocoupler to the PCB and the headphone jack, I secured the optocoupler inside the case with glue and fixed the headphone jack into the hole previously used for the "ON/OFF" push-button. I also used a JST XH 2-pin connector between the optocoupler and the PCB for the "hot" connection. This allows the PCB to still be easily removed from the case. For added safety, I applied plenty of electrical tape to any areas that could potentially expose the exterior to the device's mains voltage, even remotely.
 
-![Optocoupler and Headphone Jack]()
+![Inside](images/Hack.jpg)
+![Jack](images/Jack.jpg)
 
 Now the device was ready to be controlled externally. The next step was to design a board that could control the relay wirelessly via WiFi.
 
@@ -141,7 +148,7 @@ Now the device was ready to be controlled externally. The next step was to desig
 
 For the WiFi module, I used a D1 Mini ESP8266 board, along with a switch and a 3.5mm headphone jack. The switch allows manual toggling of the relay, while the headphone jack connects the board to the RC-710. Everything was soldered onto a perfboard and housed in a 3D-printed case. To power the board, the micro USB port on the D1 Mini is used.
 
-![WiFi Board]()
+![WiFi Board](images/WiFiBoard.jpg)
 
 ### Firmware
 
@@ -158,7 +165,7 @@ Aside from listening for TCP packets, the ESP8266 also mirrors the physical inpu
 
 The final touch to this project was creating a simple Android mobile app to control the relay, and in my case, the lamp. The app features photos of my wirelessly controllable lamps, and tapping on a lamp's photo toggles it on or off. The app also visually indicates the lamp's state by lighting up the photo when the lamp is on.
 
-![Screenshot]()
+![Screenshot](images/App.jpg)
 
 I won’t be sharing the app’s source code because it’s tailored specifically to my setup and, honestly, it’s a bit messy since this was my first time developing an Android app.
 
