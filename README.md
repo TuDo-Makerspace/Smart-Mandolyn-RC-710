@@ -165,7 +165,7 @@ Aside from listening for TCP packets, the ESP8266 also mirrors the physical inpu
 
 The final touch to this project was creating a simple Android mobile app to control the relay, and in my case, the lamp. The app features photos of my wirelessly controllable lamps, and tapping on a lamp's photo toggles it on or off. The app also visually indicates the lamp's state by lighting up the photo when the lamp is on.
 
-![Screenshot](images/App.jpg)
+![Screenshot](images/App.mp4)
 
 I won’t be sharing the app’s source code because it’s tailored specifically to my setup and, honestly, it’s a bit messy since this was my first time developing an Android app.
 
