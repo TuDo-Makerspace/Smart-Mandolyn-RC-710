@@ -115,6 +115,10 @@ I started by taking photos of both the top and bottom sides of the PCB, then ove
   <img src="RC-710/PCB/Bottom.png" alt="PCB Bottom" width="300">
 </p>
 
+On a second screen, I opened up KiCAD to create a schematic. I began by adding symbols for all the components. From there, I started connecting the symbols according to the PCB's traces. When the images from GIMP didn’t provide enough detail, I used a multimeter to verify connections between components. After getting everything laid out, I was left with a rather messy schematic. The final step was to clean it up and make it more readable.
+
+![Schematic](images/Schematic.png)
+
 ### The circuit
 
 All-in-all, the circuit can be summarized into 3 main parts: the power supply, the relay, and the RF receiver. Most of the device's functionality is handled by a mysterious blob IC.
