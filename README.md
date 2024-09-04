@@ -1,4 +1,4 @@
-# Hacking a Mandolyn RC-710 RF Remote Power Socket
+# Hacking a Mandolyn RC-710 RF Remote Power Socket <!-- omit in toc -->
 
 <p align="center">
   <img src="images/Showcase.png" alt="Showcase" width="650">
@@ -6,7 +6,37 @@
 
 In this project, I hacked a budget-friendly Mandolyn RC-710 RF remote power socket to make it controllable via WiFi—in other words, to turn it into a "smart" power socket. Along the way, I reverse-engineered the RC-710's schematics, modified the PCB to safely allow external toggling of the built-in relay, and developed an ESP8266-based board that controls the relay wirelessly via TCP.
 
-## Warning
+## Table of Contents <!-- omit in toc -->
+
+- [Disclaimer](#disclaimer)
+- [Motivation](#motivation)
+  - [1. The primary motivation: Laziness](#1-the-primary-motivation-laziness)
+  - [2. Why Not Just Buy a WiFi Smart Plug?](#2-why-not-just-buy-a-wifi-smart-plug)
+  - [3. Why not build something from scratch?](#3-why-not-build-something-from-scratch)
+  - [4. Why the Mandolyn RC-710?](#4-why-the-mandolyn-rc-710)
+- [About the Mandolyn RC-710](#about-the-mandolyn-rc-710)
+    - [The power socket](#the-power-socket)
+    - [The remote](#the-remote)
+    - [Availability](#availability)
+- [Reverse Engineering the RC-710](#reverse-engineering-the-rc-710)
+  - [Opening the RC-710](#opening-the-rc-710)
+  - [Reverse Engineering the Schematic](#reverse-engineering-the-schematic)
+  - [The circuit](#the-circuit)
+    - [Power Supply](#power-supply)
+    - [Relay](#relay)
+    - [RF Receiver](#rf-receiver)
+    - [The blob IC](#the-blob-ic)
+- [Modifying the RC-710](#modifying-the-rc-710)
+  - [Safety First](#safety-first)
+  - [Hijacking the PCB](#hijacking-the-pcb)
+- [WiFi Board](#wifi-board)
+  - [Design](#design)
+  - [Firmware](#firmware)
+- [Mobile App](#mobile-app)
+- [Conclusion](#conclusion)
+
+
+## Disclaimer
 
 <p align="center">
   <img src="images/Warning.webp" alt="Warning" width="150">
@@ -187,7 +217,7 @@ Aside from listening for TCP packets, the ESP8266 also mirrors the physical inpu
 
 The final touch to this project was creating a simple Android mobile app to control the relay, and in my case, the lamp. The app features photos of my wirelessly controllable lamps, and tapping on a lamp's photo toggles it on or off. The app also visually indicates the lamp's state by lighting up the photo when the lamp is on.
 
-![Screenshot](images/App.mp4)
+![Screenshot](images/App.gif)
 
 I won’t be sharing the app’s source code because it’s tailored specifically to my setup and, honestly, it’s a bit messy since this was my first time developing an Android app.
 
