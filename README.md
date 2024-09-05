@@ -154,6 +154,13 @@ The RF receiver is made up of a network of capacitors, inductors, and transistor
 The mysterious blob IC serves as the brains of the device. It is powered by approx. 3V (regulated down from the 5V supply using diodes) and manages the "LEARN" and "ON/OFF" push-buttons, decodes and "learns" RF signals, and ultimately controls the relay by switching the transistor Q2.
 
 <p align="center">
+  <img src="images/ICPwr.png" alt="Blob IC Power" width="250">
+  <img src="images/ICPushButtons.png" alt="Blob IC Push Buttons" width="250">
+  <img src="images/ICSchem.png" alt="Blob IC Schematic" width="250">
+  <img src="images/ICClock.png" alt="Blob IC Clock" width="250">
+</p>
+
+<p align="center">
   <img src="images/Blob.png" alt="Blob IC" width="170">
 </p>
 
@@ -233,7 +240,9 @@ Aside from listening for TCP packets, the ESP8266 also mirrors the physical inpu
 
 The final touch to this project was creating a simple Android mobile app to control the relay, and in my case, the lamp. The app features photos of my wirelessly controllable lamps, and tapping on a lamp's photo toggles it on or off. The app also visually indicates the lamp's state by lighting up the photo when the lamp is on.
 
-![Screenshot](images/App.gif)
+<p align="center">
+  <img src="images/App.gif" alt="App">
+</p>
 
 I won’t be sharing the app’s source code because it’s tailored specifically to my setup and, honestly, it’s a bit messy since this was my first time developing an Android app.
 
