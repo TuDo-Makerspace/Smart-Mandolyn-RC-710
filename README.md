@@ -125,17 +125,29 @@ All-in-all, the circuit can be summarized into 3 main parts: the power supply, t
 
 #### Power Supply
 
-The power supply circuit is as simple as it gets. The AC mains voltage is first rectified by a full-wave bridge rectifier. This rectified voltage is then regulated down to 24V DC using a Zener diode and a smoothing capacitor. The 24V DC is primarily used to power the relay. Finally, the 24V DC is further regulated down to 5V DC, again using a Zener diode and a smoothing capacitor, to supply power to the rest of the circuitry.
+The power supply circuit is as simple as it gets. The AC mains voltage is first rectified by a full-wave bridge rectifier. This rectified voltage is then regulated down to 24V DC using a Zener diode and a smoothing capacitor. The 24V DC is used to power the relay. Finally, the 24V DC is further regulated down to 5V DC, again using a Zener diode and a smoothing capacitor, to supply power to the rest of the circuitry.
+
+<p align="center">
+  <img src="images/PowerStage.png" alt="Power Supply" width="415">
+</p>
 
 #### Relay
 
-The relay's job is to switch the "live" line. To activate the relay, transistor Q2 is employed. Applying a 5V signal forward-biases Q2, which closes the circuit for the relay coil. This also turns on the indicator LED, as it is connected in series with the relay coil. When the relay is activated, it closes the "live" line.
+The relay's job is to switch the "live" line. To activate the relay, transistor Q2 is employed. Applying a 5V signal to the base of transistor Q2 activates it, allowing current to flow through the relay coil and closing the relay circuit. This also turns on the indicator LED, as it is connected in series with the relay coil. When the relay is activated, it closes the "live" line.
 
 The mysterious blob IC is responsible for controlling the relay by either pulling the transistor's base low or leaving it floating at 5V. When the device powers up, the IC's pin defaults to a floating state, meaning the relay circuit is closed and the device is enabled.
+
+<p align="center">
+  <img src="images/Relay.png" alt="Relay" width="415">
+</p>
 
 #### RF Receiver
 
 The RF receiver is made up of a network of capacitors, inductors, and transistors. I haven’t delved too deeply into this section of the circuit, as it’s quite complex and not directly relevant to my objective. From what I can gather, the RF signal is amplified and then converted into a PWM signal by the LM358 Op-Amp (U1). It seems that the actual demodulation and decoding of the signal is entirely handled by the mysterious blob IC.
+
+<p align="center">
+  <img src="images/RF.png" alt="RF Receiver" width="415">
+</p>
 
 #### The blob IC
 
@@ -149,7 +161,7 @@ The mysterious blob IC serves as the brains of the device. It is powered by appr
 
 ### Safety First
 
-Before applying any modifications to the RC-710, I wanted to ensure that I could safely work on the device without the risk of electric shock. The RC-710 is powered by a 24V DC supply, which is derived from the mains voltage. To eliminate the risk of electric shock, I decided to power the device using a 24V DC power supply instead of mains by attaching the postive lead to the positive side of C12 and the negative lead to the negative side of C12 (GND).
+Before applying any modifications to the RC-710, I wanted to ensure that I could safely work on the device without the risk of electric shock.To achieve this, I decided to power the device using a 24V DC power supply instead of mains by attaching the postive lead to the positive side of C12 and the negative lead to GND.
 
 <p align="center">
   <img src="images/24V.jpg" alt="24V DC Power Supply" width="415">
@@ -169,7 +181,7 @@ I set some straightforward rules and requirements for the project:
 - The device's internal functionality does not need to be preserved.
 - The external signal must be electrically isolated from the device.
 
-To hijack the device, the first step was to find a simple way to disable the blob IC. That way I didn't have to worry about the device's internal functions interfering with the external signal. This was easily achieved by depraiving the blob IC of its power by desoldering diode D12. Later I also discovered that R22 also needed to be removed, as a high state on the OP-AMP’s output was somehow still providing enough power to the blob to pull down the base of the relay driver transistor Q2.
+To hijack the device, the first step was to find a simple way to disable the blob IC. That way I didn't have to worry about the device's internal functions interfering with the external signal. This was easily achieved by depraiving the blob IC of its power by desoldering diode D12. Later I discovered that R22 also needed to be removed, as a high state on the OP-AMP’s output was feeding blob with power to pull down the base of the relay driver transistor Q2.
 
 <p align="center">
   <img src="images/D12Cut.png" alt="D12 Removed" width="250">
@@ -187,7 +199,7 @@ To protect the "low voltage" side of the optocoupler, I also added a 220 Ohm cur
  <img src="images/Optocoupler.png" alt="Optocoupler" width="650">
 </p>
 
-After soldering the optocoupler to the PCB and the headphone jack, I secured the optocoupler inside the case with glue and fixed the headphone jack into the hole previously used for the "ON/OFF" push-button. I also used a JST XH 2-pin connector between the optocoupler and the PCB for the "hot" connection. This allows the PCB to still be easily removed from the case. For added safety, I applied plenty of electrical tape to any areas that could potentially expose the exterior to the device's mains voltage, even remotely.
+After soldering the optocoupler to the PCB and the headphone jack, I secured the optocoupler inside the case with glue. The headphone jack was glued into the hole previously used for the "ON/OFF" push-button. I also used a JST XH 2-pin connector between the optocoupler and the PCB for the "hot" connection. This allows the PCB to still be easily removed from the case. For added safety, I applied plenty of electrical tape to any areas that could potentially expose the exterior to the device's mains voltage, even remotely.
 
 <p align="center">
   <img src="images/Hack.jpg" alt="Inside" width="415">

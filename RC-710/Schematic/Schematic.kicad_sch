@@ -5459,7 +5459,7 @@
 		)
 		(uuid "af2049f5-3f23-49a9-991b-06422a93f171")
 	)
-	(text "IC + Demod. Clock"
+	(text "IC Clock"
 		(exclude_from_sim no)
 		(at 104.14 97.79 0)
 		(effects
